@@ -1,12 +1,11 @@
 from pprint import pprint as print
-from typing import Any, Awaitable, Callable, List, Tuple
+from typing import List, Tuple
 
+from ..interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from ..models.message import Message
 
-FilterFn = Callable[[Message], bool]
-Handler = Callable[[Message], Awaitable[Any]]
 
-class DomainRouter:
+class DomainRouter(IMessageRouter):
     def __init__(self) -> None:
         self._routes: List[Tuple[FilterFn, Handler]] = []
 

@@ -2,9 +2,10 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from test_utils import UserToken
 
 from api.dependencies import crypto_hash_factory
+
+from .test_utils import UserToken
 
 
 @pytest.mark.asyncio

@@ -14,11 +14,12 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.pool import StaticPool
-from test_utils import UserToken, make_token, make_user
 
 from domain.models.user import User
 from infrastructure.db.db import Base, get_db
 from main import app as actual_app
+
+from .test_utils import UserToken, make_token, make_user
 
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
 
