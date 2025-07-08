@@ -3,7 +3,7 @@ from typing import Annotated
 from domain.models.message import Message
 
 from .domain_router import DomainMessageRouter
-from .injectors import Depends, service_injector
+from .injector import Depends
 
 router = DomainMessageRouter()
 
@@ -18,7 +18,6 @@ def service_factory():
 
 
 @router.message(lambda m: m.text == "hello")
-@service_injector
 async def domain_route(
     msg: Message,
     some_service: Annotated[SomeClass, Depends(service_factory)]

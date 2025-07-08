@@ -4,6 +4,8 @@ from typing import List, Tuple
 from domain.interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from domain.models.message import Message
 
+from .injector import service_injector
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,8 +23,9 @@ class DomainMessageRouter(IMessageRouter):
         Декоратор: @domain_router.message(lambda m: m.text == "/start")
         """
         def decorator(fn: Handler) -> Handler:
-            self._routes.append((filter_fn, fn))
-            return fn
+            wrapped = service_injector(fn)
+            self._routes.append((filter_fn, wrapped))
+            return wrapped
         return decorator
 
     async def dispatch(self, dm: Message):
