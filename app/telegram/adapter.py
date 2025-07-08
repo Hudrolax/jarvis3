@@ -2,7 +2,11 @@ from aiogram import Dispatcher
 from aiogram.types import Message
 
 from domain.models.message import Message as DomainMessage
-from domain.services.message_router import domain_router
+from domain.services.messages.domain_router import DomainMessageRouter
+from domain.services.messages.routers import router as test_router
+
+domain_router = DomainMessageRouter()
+domain_router.include_router(test_router)
 
 
 def apply_dispatcher_adapter(dp: Dispatcher) -> None:

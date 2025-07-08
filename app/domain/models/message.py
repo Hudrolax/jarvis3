@@ -17,3 +17,6 @@ class Message:
         self.text = text
         self.chat_id = chat_id
         self.answer = answer
+
+    def __str__(self) -> str:
+        return f'Message(text={self.text}, chat_id={self.chat_id})'

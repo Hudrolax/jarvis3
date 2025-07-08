@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 from api.auth import check_token, jwt_token
+from api.dependencies import get_user_service
 from domain.exceptions import DoubleFoundError, NotFoundError, PermissionException, RepositoryException
 from domain.models.user import User
 from domain.services.user_service import IUserService
 
-from ..dependencies import get_user_service
 from .schemas.user_schema import (
     UserCreateSchema,
     UserLoginSchema,

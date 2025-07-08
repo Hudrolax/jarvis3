@@ -22,6 +22,6 @@ class LinkRepo(
     ListMixin[TDomain, TOrm, LinkDict, LinkFields],
     ExistsMixin[TDomain, TOrm, LinkDict],
     DeleteMixin[TDomain, TOrm, LinkDict],
-    VectorSearchMixin[TDomain, TOrm],
+    VectorSearchMixin[TDomain, TOrm, LinkDict],
     Generic[TDomain, TOrm, TTypedDict],
 ): ...

@@ -3,13 +3,12 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security.api_key import APIKeyHeader
 
+from api.dependencies import get_user_service
 from config.config import settings
 from domain.exceptions import NotFoundError, ValueException
 from domain.models.user import User
 from domain.services.user_service import IUserService
 from utils.jwt_token import JWTToken
-
-from .dependencies import get_user_service
 
 api_key_header = APIKeyHeader(name="TOKEN", auto_error=True)
 jwt_token = JWTToken(

@@ -4,12 +4,16 @@ from typing import Any, Awaitable, Callable, List, Tuple
 from ..models.message import Message
 
 FilterFn = Callable[[Message], bool]
-Handler = Callable[[Message], Awaitable[Any]]
+Handler = Callable[..., Awaitable[Any]]
 
 class IMessageRouter(ABC):
     _routes: List[Tuple[FilterFn, Handler]] = []
+    _routers: List['IMessageRouter'] = []
 
     @abstractmethod
     def message(self, filter_fn: FilterFn = lambda _: True) -> Callable: ...
+
+    @abstractmethod
+    def include_router(self, router: 'IMessageRouter') -> None: ...
 
 
