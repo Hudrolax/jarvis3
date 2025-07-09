@@ -16,4 +16,13 @@ class IMessageRouter(ABC):
     @abstractmethod
     def include_router(self, router: 'IMessageRouter') -> None: ...
 
+    @abstractmethod
+    def include_middleware(self, router: 'IMessageRouter') -> None: ...
 
+    @abstractmethod
+    async def dispatch(self, dm: Message):
+        """
+        Пробегаемся по всем зарегистрированным маршрутам
+        и вызываем те, чей фильтр вернул True.
+        """
+        ...

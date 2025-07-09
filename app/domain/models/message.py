@@ -11,11 +11,15 @@ class Message:
     def __init__(
         self,
         text: Annotated[str, "Текст сообщения"],
+        user_id: Annotated[int | None, "ID пользователя"] = None,
         chat_id: Annotated[int | None, "ID чата"] = None,
+        username: Annotated[str | None, "username пользователя"] = None,
         answer: Annotated[AnswerType, "Метод ответа на сообщение"] = _default_answer,
     ) -> None:
         self.text = text
+        self.user_id = user_id,
         self.chat_id = chat_id
+        self.username = username,
         self.answer = answer
 
     def __str__(self) -> str:
