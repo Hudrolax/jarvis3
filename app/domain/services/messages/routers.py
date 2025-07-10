@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from domain.interfaces.user_ifaces import IUserService
-from domain.models.message import Message
+from domain.models import Message
 
 from .dependencies import get_user_service
 from .domain_router import DomainMessageRouter

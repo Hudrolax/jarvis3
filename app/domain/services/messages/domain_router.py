@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 
+from domain.exceptions import DomainException
 from domain.interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from domain.models.message import Message
 
@@ -32,7 +33,7 @@ class DomainMessageRouter(IMessageRouter):
             return wrapped
         return decorator
 
-    async def dispatch(self, dm: Message):
+    async def dispatch(self, dm: Message) -> None:
         """
         Пробегаемся по всем зарегистрированным маршрутам
         и вызываем те, чей фильтр вернул True.
@@ -41,35 +42,30 @@ class DomainMessageRouter(IMessageRouter):
             # handle middlewares
             for router in self._middlewares:
                 for filter_fn, handler in router._routes:
-                    try:
-                        if filter_fn(dm):
-                            logger.debug(f'Handle message: {dm}')
-                            await handler(dm)
-                    except Exception as ex:
-                        logger.error(ex)
-                        raise
-
-            # handle self routes
-            for filter_fn, handler in self._routes:
-                try:
                     if filter_fn(dm):
                         logger.debug(f'Handle message: {dm}')
                         await handler(dm)
-                except Exception as ex:
-                    logger.error(ex)
-                    raise
+
+            # handle self routes
+            for filter_fn, handler in self._routes:
+                if filter_fn(dm):
+                    logger.debug(f'Handle message: {dm}')
+                    await handler(dm)
+                    return
 
             # handle include routers
             for router in self._routers:
                 for filter_fn, handler in router._routes:
-                    try:
-                        if filter_fn(dm):
-                            logger.debug(f'Handle message: {dm}')
-                            await handler(dm)
-                    except Exception as ex:
-                        logger.error(ex)
-                        raise
-        except Exception:
+                    if filter_fn(dm):
+                        logger.debug(f'Handle message: {dm}')
+                        await handler(dm)
+                        return
+
+        except DomainException as ex:
+            logger.warning(ex)
+            pass
+        except Exception as ex:
+            logger.error(ex)
             await dm.answer(Message(text='Непредвиденная ошибка'))
             raise
 
