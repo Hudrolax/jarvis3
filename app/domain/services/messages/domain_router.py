@@ -1,7 +1,7 @@
 import logging
 from typing import List, Tuple
 
-from domain.exceptions import DomainException
+from domain.exceptions import NotFoundError
 from domain.interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from domain.models.message import Message
 
@@ -21,7 +21,7 @@ class DomainMessageRouter(IMessageRouter):
         self._routers.append(router)
 
     def include_middleware(self, router: 'IMessageRouter') -> None:
-        self._routers.append(router)
+        self._middlewares.append(router)
 
     def message(self, filter_fn: FilterFn = lambda _: True):
         """
@@ -51,7 +51,6 @@ class DomainMessageRouter(IMessageRouter):
                 if filter_fn(dm):
                     logger.debug(f'Handle message: {dm}')
                     await handler(dm)
-                    return
 
             # handle include routers
             for router in self._routers:
@@ -59,9 +58,8 @@ class DomainMessageRouter(IMessageRouter):
                     if filter_fn(dm):
                         logger.debug(f'Handle message: {dm}')
                         await handler(dm)
-                        return
 
-        except DomainException as ex:
+        except NotFoundError as ex:
             logger.warning(ex)
             pass
         except Exception as ex:

@@ -16,13 +16,16 @@ async def get_link_route(
     msg: Message,
     link_service: Annotated[ILinkService, Depends(get_link_service)]
 ):
-    print(msg)
-    print(msg.data)
+    link = await link_service.append({
+        'user_id': msg.data['user'].id,
+        'link': msg.text,
+        'description': 'просто',
+    })
     await msg.answer(Message(text='HELLLOOOOOO'))
 
 
-# @router.message(lambda m: m.text == "test")
-# async def test_router(msg: Message):
-#     print('router works')
-#     print(msg)
-#     await msg.answer(Message(text='Teeest'))
+@router.message(lambda m: m.text == "test")
+async def test_router(msg: Message):
+    print('router works')
+    print(msg)
+    await msg.answer(Message(text='Teeest'))

@@ -15,7 +15,7 @@ from domain.models import Link, User
 from domain.services import EmbeddingService, LinkService, UserService
 from infrastructure.clients import OpenAIEmbeddingClient
 from infrastructure.db.db import get_db
-from infrastructure.db.models import UserORM
+from infrastructure.db.models import LinkORM, UserORM
 from infrastructure.repositories import LinkRepo, UserRepo
 from utils.crypto_hash import AbstractCrypto, Argon2Crypto
 
@@ -41,7 +41,7 @@ def get_user_service(repo: Annotated[IUserRepoProtocol, Depends(user_repo_factor
 def link_repo_factory(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ILinkRepoProtocol:
-    return LinkRepo(db, domain_model=Link, orm_class=UserORM)
+    return LinkRepo(db, domain_model=Link, orm_class=LinkORM)
 
 
 def embedding_client_factory() -> IEmbeddingClient:
