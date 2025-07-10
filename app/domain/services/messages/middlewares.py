@@ -17,7 +17,8 @@ async def auth_middleware(
     user_service: Annotated[IUserService, Depends(get_user_service)]
 ):
     try:
-        await user_service.read(filters={'telegram_id': msg.user_id})
+        user = await user_service.read(filters={'telegram_id': msg.user_id})
+        msg.data['user'] = user
     except NotFoundError:
         await msg.answer(Message(text='Я тебя не знаю'))
         raise NotFoundError(f'Пользователь с телеграм id {msg.user_id} не найден в базе.')

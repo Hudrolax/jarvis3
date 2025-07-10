@@ -41,6 +41,9 @@ class Settings(BaseSettings):
         ]
     }
 
+    # OpeanAI
+    OPENAI_API_KEY: str = Field(..., description='OpenAI API key')
+
     @field_validator("TZ", mode="before")
     @classmethod
     def _parse_tz(cls, v):

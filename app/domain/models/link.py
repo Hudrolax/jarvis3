@@ -12,7 +12,7 @@ class Link(BaseDomainModel):
     link: str = Field(..., description='Ссылка')
     description: str = Field("", description='Описание')
     title: str | None = Field(None, description='Заголовок (короткое описание)')
-    created_at: datetime = Field(datetime.now(timezone.utc), description='Дата создания')
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description='Дата создания')
     pull_count: int = Field(0, description='Количество запросов ссылки')
     vector: list[float] | None = Field(None, description='Векторное представление ссылки')
 

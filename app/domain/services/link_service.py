@@ -1,8 +1,7 @@
 import logging
 
 from ..exceptions import NotFoundError
-from ..interfaces.embedding_ifaces import IEmbeddingService
-from ..interfaces.link_ifaces import ILinkRepoProtocol, ILinkService
+from ..interfaces import IEmbeddingService, ILinkRepoProtocol, ILinkService
 from ..models import Link, LinkDict, User
 
 logger = logging.getLogger(__name__)

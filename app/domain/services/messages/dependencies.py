@@ -2,14 +2,21 @@ from typing import Annotated
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from domain.interfaces.user_ifaces import IUserRepoProtocol, IUserService
-from domain.interfaces.link_ifaces import ILinkService, ILinkRepoProtocol
-from domain.models.user import User, Link
-from domain.services.user_service import UserService
+from config import settings
+from domain.interfaces import (
+    IEmbeddingClient,
+    IEmbeddingService,
+    ILinkRepoProtocol,
+    ILinkService,
+    IUserRepoProtocol,
+    IUserService,
+)
+from domain.models import Link, User
+from domain.services import EmbeddingService, LinkService, UserService
+from infrastructure.clients import OpenAIEmbeddingClient
 from infrastructure.db.db import get_db
-from infrastructure.db.models.user_orm import UserORM
-from infrastructure.repositories.user_repo import UserRepo
-from infrastructure.repositories.link_repo import LinkRepo
+from infrastructure.db.models import UserORM
+from infrastructure.repositories import LinkRepo, UserRepo
 from utils.crypto_hash import AbstractCrypto, Argon2Crypto
 
 from .injector import Depends
@@ -34,7 +41,15 @@ def get_user_service(repo: Annotated[IUserRepoProtocol, Depends(user_repo_factor
 def link_repo_factory(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> ILinkRepoProtocol:
-    return LinkRepo(db, domain_model=User, orm_class=UserORM)
+    return LinkRepo(db, domain_model=Link, orm_class=UserORM)
 
-def get_link_service(repo: Annotated[IUserRepoProtocol, Depends(user_repo_factory)]) -> IUserService:
-    return UserService(repository=repo, crypto_hash=crypto_hash_factory())
+
+def embedding_client_factory() -> IEmbeddingClient:
+    return OpenAIEmbeddingClient(api_key=settings.OPENAI_API_KEY)
+
+
+def get_link_service(
+    repo: Annotated[ILinkRepoProtocol, Depends(link_repo_factory)],
+    embedding_client: Annotated[IEmbeddingService, Depends(embedding_client_factory)],
+) -> ILinkService:
+    return LinkService(repository=repo, embed_service=EmbeddingService(client=embedding_client))
