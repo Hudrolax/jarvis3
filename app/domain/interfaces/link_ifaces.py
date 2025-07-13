@@ -40,6 +40,9 @@ class ILinkService(ABC):
     @abstractmethod
     async def remove(self, user: User, id: int) -> bool: ...
 
+    @abstractmethod
+    async def read(self, filters: LinkDict) -> Link: ...
+
 
 class ILinkFilterAgent(Protocol):
     async def filter_links_by_prompt(self, links, prompt: str) -> list: ...

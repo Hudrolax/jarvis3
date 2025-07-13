@@ -33,10 +33,10 @@ dependencies = [
   "uvicorn==0.34.0",
   "pydantic-settings==2.9.1",
   "pgvector==0.4.1",
-  "openai==1.91.0",
-  "langgraph==0.4.8",
-  "langchain==0.3.25",
-  "langchain-openai==0.3.24",
+  "openai==1.95.1",
+  "langgraph==0.5.2",
+  "langchain==0.3.26",
+  "langchain-openai==0.3.27",
   "aiogram==3.20.0.post0"
 ]
 
@@ -52,6 +52,7 @@ dev = [
   "types-passlib==1.7.7.20250602",
   "types-python-jose==3.5.0.20250531",
   "asgi-lifespan==2.1.0",
+  "pynvim"
 ]
 
 ########################################

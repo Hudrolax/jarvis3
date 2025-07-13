@@ -6,12 +6,16 @@ from pydantic import Field
 from .base_domain_model import BaseCreateDict, BaseDomainModel
 
 
-class Link(BaseDomainModel):
-    id: int = Field(..., description='ID в БД')
+class LinkCreate(BaseDomainModel):
+    """Модель для добавления ссылки"""
     user_id: int = Field(..., description='ID пользователя в БД')
     link: str = Field(..., description='Ссылка')
     description: str = Field("", description='Описание')
     title: str | None = Field(None, description='Заголовок (короткое описание)')
+
+
+class Link(LinkCreate):
+    id: int = Field(..., description='ID в БД')
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description='Дата создания')
     pull_count: int = Field(0, description='Количество запросов ссылки')
     vector: list[float] | None = Field(None, description='Векторное представление ссылки')

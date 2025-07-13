@@ -1,7 +1,7 @@
 from typing import Generic, Optional, Type, cast
 
 from sqlalchemy import insert, or_, select
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from domain.exceptions import DoubleFoundError, NotFoundError, RepositoryException
@@ -27,6 +27,21 @@ class CreateMixin(BaseSQLAlchemyRepo[TDomain, TOrm], Generic[TDomain, TOrm, TTyp
         stmt = insert(self.orm_class).values(**data).returning(self.orm_class)
         try:
             result = await self.db.execute(stmt)
+        except IntegrityError as ex:
+            # Проверяем, что это именно нарушение уникального ограничения
+            orig = ex.orig
+            pgcode = getattr(orig, "pgcode", None)
+            msg = str(orig).lower()
+
+            is_pg_unique_violation = pgcode == "23505"
+            is_sqlite_unique_violation = "unique constraint failed" in msg
+            is_mysql_duplicate_key = "duplicate entry" in msg
+
+            if is_pg_unique_violation or is_sqlite_unique_violation or is_mysql_duplicate_key:
+                await self.db.rollback()
+                raise DoubleFoundError("Запись с такими данными уже существует") from ex
+
+            raise
         except SQLAlchemyError as ex:
             raise RepositoryException(str(ex))
 
@@ -170,11 +185,7 @@ class VectorSearchMixin(
             stmt = stmt.filter(*conditions)
 
         # 3. Сортируем по косинусному расстоянию и ограничиваем
-        stmt = (
-            stmt
-            .order_by(self.orm_class.vector.op("<=>")(embedding))
-            .limit(limit)
-        )
+        stmt = stmt.order_by(self.orm_class.vector.op("<=>")(embedding)).limit(limit)
 
         # 4. Выполняем и мапим результат
         try:

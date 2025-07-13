@@ -39,3 +39,6 @@ class LinkService(ILinkService):
     async def remove(self, user: User, id: int) -> bool:
         deleted_count = await self.repository.delete(filters={'user_id': user.id, 'id': id})
         return bool(deleted_count)
+
+    async def read(self, filters: LinkDict) -> Link:
+        return await self.repository.read(filters=filters)

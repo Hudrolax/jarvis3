@@ -1,6 +1,9 @@
+from datetime import datetime
 from typing import Awaitable, Callable
 
-from pydantic import Field
+from pydantic import ConfigDict, Field, field_serializer
+
+from config import settings
 
 from .base_domain_model import BaseDomainModel
 
@@ -9,6 +12,20 @@ AnswerType = Callable[["Message"], Awaitable[None]]
 
 async def _default_answer(*_) -> None:
     return None
+
+class Context(BaseDomainModel):
+    model_config = ConfigDict(
+        # чтобы .model_dump_json() сразу возвращал JSON-строку
+        populate_by_name=True  
+    )
+    date: datetime = Field(default_factory=lambda: datetime.now(tz=settings.TZ), description='Дата сообщений')
+    username: str = Field(..., description='Имя пользователя')
+    user_text: str = Field(..., description='Текст пользователя')
+    jarvis_text: str = Field(..., description='Ответ Jarvis')
+
+    @field_serializer('date')
+    def fmt_date(self, dt: datetime):
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class Message(BaseDomainModel):
@@ -20,3 +37,4 @@ class Message(BaseDomainModel):
     data: dict = Field(
         default_factory=dict, description="Словарь с дополнительными данными, которые могут прикреплять middleware."
     )
+    context: list[Context] = Field(default_factory=list, description='Контекст диалога')

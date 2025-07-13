@@ -31,3 +31,7 @@ class ValueException(ServiceException):
 
 class PermissionException(ServiceException):
     pass
+
+
+class MessageRouterException(DomainException):
+    pass
