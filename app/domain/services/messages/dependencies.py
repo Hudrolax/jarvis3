@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import settings
 from domain.interfaces import (
-    IAgent,
     IEmbeddingClient,
     IEmbeddingService,
     ILinkRepoProtocol,
@@ -14,8 +13,6 @@ from domain.interfaces import (
 )
 from domain.models import Link, User
 from domain.services import EmbeddingService, LinkService, UserService
-from infrastructure.agents import Agent
-from infrastructure.agents.tools import add_link_tool
 from infrastructure.clients import OpenAIEmbeddingClient
 from infrastructure.db.db import get_db
 from infrastructure.db.models import LinkORM, UserORM
@@ -57,15 +54,3 @@ def get_link_service(
 ) -> ILinkService:
     return LinkService(repository=repo, embed_service=EmbeddingService(client=embedding_client))
 
-
-# ****** Link dependencies ******
-def get_add_link_agent() -> IAgent:
-    return Agent(
-        system_message="""Тебя зовут Jarvis. Ты агент по добавлению ссылок в БД. Если пользователь хочет добавить
-        ссылку, то ты должен вызвать инструмент добавления ссылок. Если пользователь не предоставил все необходимые
-        данные для добавления ссылки - ты должен уточнить у пользователя эти данные (исходи из сигнатуры tools).
-        Если пользователь не хочет добавлять ссылку, ты не должен вызывать методы, и не должен общаться с пользователем,
-        а должен ответить, что ты не можешь помочь.
-        """.replace('\n', ' '),
-        tools = [add_link_tool]
-    )
