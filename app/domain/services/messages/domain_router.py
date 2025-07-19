@@ -1,7 +1,7 @@
 import logging
 from typing import List, Tuple
 
-from domain.exceptions import MessageRouterException
+from domain.exceptions import MessageRouterException, NotFoundError
 from domain.interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from domain.models.message import Message
 from infrastructure.deps_injector import service_injector
@@ -43,7 +43,10 @@ class DomainMessageRouter(IMessageRouter):
                 for filter_fn, handler in router._routes:
                     if filter_fn(dm):
                         logger.debug(f'Handle message: {dm}')
-                        await handler(dm)
+                        try:
+                            await handler(dm)
+                        except NotFoundError:
+                            return
 
             # handle self routes
             for filter_fn, handler in self._routes:

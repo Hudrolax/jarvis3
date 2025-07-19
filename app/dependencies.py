@@ -1,4 +1,5 @@
 # app/deps.py
+import sys
 from typing import Annotated
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,7 +25,20 @@ from utils.crypto_hash import AbstractCrypto, Argon2Crypto
 
 def fastapi_inject(domain_fn):
     async def _inject():
-        return await service_injector(domain_fn)()
+        # 1. создаём сервис и всё что ему нужно
+        service, async_gens, sync_ctxs = await service_injector(domain_fn)(return_ctx=True)
+
+        try:
+            yield service          # отдаём объект маршруту
+        finally:
+            # 2. закрываем всё то, что service_injector положил в списки
+            for agen in reversed(async_gens):
+                try:
+                    await agen.__anext__()
+                except StopAsyncIteration:
+                    pass
+            for cm in reversed(sync_ctxs):
+                cm.__exit__(*sys.exc_info())
     return _inject
 
 

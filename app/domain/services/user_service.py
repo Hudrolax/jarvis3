@@ -62,7 +62,7 @@ class UserService(IUserService):
         if self.crypto_hash.verify(old_password, user.hashed_password):
             hashed_password = self.crypto_hash.hash(new_password)
             updated_users = await self.repository.update(
-                filters={"username": username}, data={"hashed_password": hashed_password}
+                filters={"id": user.id}, data={"hashed_password": hashed_password}
             )
             if len(updated_users) == 1:
                 return updated_users[0]

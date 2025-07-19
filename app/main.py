@@ -10,7 +10,6 @@ from uvicorn.server import Server
 from api.router import router
 from config.logger import configure_logger
 from domain.util import stop_event
-from infrastructure.db.db import sessionmanager
 from tasks import task_create_admin
 from telegram.runner import run_bots
 
@@ -28,7 +27,6 @@ async def lifespan(app: FastAPI):
 
     # shutdown events
     stop_event.set()
-    await sessionmanager.close()
 
 
 app = FastAPI(

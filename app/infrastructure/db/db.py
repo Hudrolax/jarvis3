@@ -3,6 +3,7 @@
 # make migrations
 # alembic revision --autogenerate -m "your message here"
 import contextlib
+import logging
 from typing import Any, AsyncIterator
 
 from sqlalchemy.ext.asyncio import (
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import declarative_base
 
 from config.config import settings
+
+logger = logging.getLogger(__name__)
 
 Base = declarative_base()
 
@@ -61,8 +64,11 @@ class DatabaseSessionManager:
             await session.close()
 
 
-sessionmanager = DatabaseSessionManager(settings.DATABASE_URL, {"echo": False})
+# sessionmanager = DatabaseSessionManager(settings.DATABASE_URL, {"echo": False})
+sessionmanager = DatabaseSessionManager(settings.DATABASE_URL, {"echo_pool": 'debug', 'pool_pre_ping': True})
 
 async def get_db():
     async with sessionmanager.session() as session:
+        logger.debug('Взял сессию БД')
         yield session
+        logger.debug('Освободил сессию БД')
