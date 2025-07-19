@@ -1,13 +1,11 @@
-from typing import Annotated
-
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
 from api.auth import check_token, jwt_token
-from api.dependencies import get_user_service
+from dependencies import fastapi_inject, get_user_service
 from domain.exceptions import DoubleFoundError, NotFoundError, PermissionException, RepositoryException
-from domain.models.user import User
-from domain.services.user_service import IUserService
+from domain.interfaces import IUserService
+from domain.models import User
 
 from .schemas.user_schema import (
     UserCreateSchema,
@@ -29,7 +27,7 @@ router = APIRouter(
 @router.post("/login/", include_in_schema=False)
 async def login(
     user_data: UserLoginSchema,
-    service: Annotated[IUserService, Depends(get_user_service)]
+    service: IUserService = Depends(fastapi_inject(get_user_service))
 ):
     try:
         user = await service.verify_password(**user_data.model_dump())
@@ -63,8 +61,8 @@ async def login(
 @router.post("/update_password/", include_in_schema=False)
 async def update_user_password(
     data: UserUpdatePasswordSchema,
-    service: Annotated[IUserService, Depends(get_user_service)],
-    user: Annotated[User, Depends(check_token)],
+    service: IUserService = Depends(fastapi_inject(get_user_service)),
+    user: User = Depends(check_token),
 ) -> UserReadSchema | None:
     try:
         updated_user = await service.update_password(
@@ -81,7 +79,7 @@ async def update_user_password(
 @router.get("/{id}/", include_in_schema=False)
 async def read_user(
     id: int,
-    user: Annotated[User, Depends(check_token)],
+    user: User = Depends(check_token),
 ) -> UserReadSchema:
     try:
         return UserReadSchema(**user.model_dump())
@@ -95,8 +93,8 @@ async def read_user(
 @router.post("/", include_in_schema=False)
 async def create_user(
     data: UserCreateSchema,
-    service: Annotated[IUserService, Depends(get_user_service)],
-    user: Annotated[User, Depends(check_token)],
+    service: IUserService = Depends(fastapi_inject(get_user_service)),
+    user: User = Depends(check_token),
 ) -> UserReadSchema:
     try:
         user = await service.create(user=user, **data.model_dump())

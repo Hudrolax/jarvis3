@@ -1,3 +1,4 @@
+# app/deps.py
 from typing import Annotated
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,10 +17,15 @@ from domain.services import EmbeddingService, LinkService, UserService
 from infrastructure.clients import OpenAIEmbeddingClient
 from infrastructure.db.db import get_db
 from infrastructure.db.models import LinkORM, UserORM
+from infrastructure.deps_injector import Depends, service_injector
 from infrastructure.repositories import LinkRepo, UserRepo
 from utils.crypto_hash import AbstractCrypto, Argon2Crypto
 
-from .injector import Depends
+
+def fastapi_inject(domain_fn):
+    async def _inject():
+        return await service_injector(domain_fn)()
+    return _inject
 
 
 def crypto_hash_factory() -> AbstractCrypto:

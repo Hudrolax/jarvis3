@@ -2,13 +2,13 @@ import json
 import re
 from typing import Annotated
 
+from dependencies import get_link_service
 from domain.exceptions import DoubleFoundError, MessageRouterException
 from domain.interfaces import IAgent, ILinkService
 from domain.models import Context, Message
+from infrastructure.deps_injector import Depends
 
-from .dependencies import get_add_link_agent, get_link_service
 from .domain_router import DomainMessageRouter
-from .injector import Depends
 
 router = DomainMessageRouter()
 
@@ -24,17 +24,17 @@ async def status_router(msg: Message):
     raise MessageRouterException
 
 
-@router.message(lambda m: bool(re.compile(r'https?://\S+').search(m.text)))
-async def add_link_by_agent(
-    msg: Message,
-    agent: Annotated[IAgent, Depends(get_add_link_agent)]
-):
-    print('add link by agent')
-    response: Message = await agent.invoke(msg)
-    await msg.answer(response)
-    msg.context.append(
-        Context(username=msg.data['user'].username, user_text=msg.text, jarvis_text=response.text)
-    )
+# @router.message(lambda m: bool(re.compile(r'https?://\S+').search(m.text)))
+# async def add_link_by_agent(
+#     msg: Message,
+#     agent: Annotated[IAgent, Depends(get_add_link_agent)]
+# ):
+#     print('add link by agent')
+#     response: Message = await agent.invoke(msg)
+#     await msg.answer(response)
+#     msg.context.append(
+#         Context(username=msg.data['user'].username, user_text=msg.text, jarvis_text=response.text)
+#     )
     # raise MessageRouterException
 
 

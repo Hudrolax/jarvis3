@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from api.auth import jwt_token
-from api.dependencies import crypto_hash_factory
+from dependencies import crypto_hash_factory
 from domain.interfaces.user_ifaces import IUserRepoProtocol
 from domain.models.user import User
 from domain.services.user_service import IUserService, UserService

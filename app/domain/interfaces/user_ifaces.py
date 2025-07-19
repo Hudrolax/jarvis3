@@ -44,3 +44,6 @@ class IUserService(ABC):
 
     @abstractmethod
     async def update(self, user: User, id: int, data: UserDict) -> User: ...
+
+    @abstractmethod
+    async def create_admin_record(self) -> None: ...

@@ -1,12 +1,12 @@
 from typing import Annotated
 
+from dependencies import get_user_service
 from domain.exceptions import NotFoundError
 from domain.interfaces.user_ifaces import IUserService
 from domain.models import Message
+from infrastructure.deps_injector import Depends
 
-from .dependencies import get_user_service
 from .domain_router import DomainMessageRouter
-from .injector import Depends
 
 middleware = DomainMessageRouter()
 

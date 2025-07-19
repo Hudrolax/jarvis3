@@ -4,8 +4,7 @@ from typing import List, Tuple
 from domain.exceptions import MessageRouterException
 from domain.interfaces.message_router_iface import FilterFn, Handler, IMessageRouter
 from domain.models.message import Message
-
-from .injector import service_injector
+from infrastructure.deps_injector import service_injector
 
 logger = logging.getLogger(__name__)
 

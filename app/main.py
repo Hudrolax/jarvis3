@@ -11,9 +11,8 @@ from api.router import router
 from config.logger import configure_logger
 from domain.util import stop_event
 from infrastructure.db.db import sessionmanager
+from tasks import task_create_admin
 from telegram.runner import run_bots
-
-# from tasks import task_create_admin
 
 configure_logger()
 
@@ -67,7 +66,7 @@ async def main() -> None:
     await asyncio.gather(
         run_fastapi(),
         run_bots(),
-        # task_create_admin(sessionmanager),
+        task_create_admin(),
     )
 
 

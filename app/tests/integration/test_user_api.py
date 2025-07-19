@@ -3,7 +3,7 @@ from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import crypto_hash_factory
+from dependencies import crypto_hash_factory
 
 from .test_utils import UserToken
 

@@ -1,4 +1,3 @@
-# domain/services/messages/injector.py
 import asyncio
 import inspect
 import logging
@@ -6,11 +5,22 @@ from contextlib import contextmanager
 from functools import wraps
 from typing import Annotated, get_args, get_origin
 
+from domain.interfaces.message_router_iface import Handler
+
 logger = logging.getLogger(__name__)
 
 class Depends:
     def __init__(self, dependency):
         self.dependency = dependency
+
+def use_services():
+    """
+    Decorator for service injection
+    """
+    def decorator(fn: Handler) -> Handler:
+        wrapped = service_injector(fn)
+        return wrapped
+    return decorator
 
 
 def generator_context(func):
